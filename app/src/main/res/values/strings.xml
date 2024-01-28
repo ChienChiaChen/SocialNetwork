@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SocialNetwork</string>
+    <string name="make_post">Make post</string>
 </resources>
