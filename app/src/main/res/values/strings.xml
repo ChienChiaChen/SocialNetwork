@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name">SocialNetwork</string>
     <string name="make_post">Make post</string>
+
+    <string name="login_page_password_visible">Hide password</string>
+    <string name="login_page_password_hidden">Show password</string>
+    <string name="login_page_password_hint">Password</string>
+    <string name="login_page_dont_have_an_account_yet">Don\'t have an account yet?</string>
+    <string name="login_page_login">Login</string>
+    <string name="login_page_sign_up">Sign up!</string>
+    <string name="login_hint">Username / E-Mail</string>
+
 </resources>
