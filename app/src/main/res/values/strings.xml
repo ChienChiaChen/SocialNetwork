@@ -21,4 +21,8 @@
     <string name="register_page_already_have_an_account">Already have an account?</string>
     <string name="register_page_sign_in">Sign in!</string>
 
+    <string name="main_feed_back">Navigate back</string>
+    <string name="main_feed_your_feed">Your feed</string>
+    <string name="main_feed_read_more">Read more</string>
+
 </resources>
