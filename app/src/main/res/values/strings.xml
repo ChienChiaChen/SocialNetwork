@@ -27,4 +27,10 @@
 
     <string name="profile_page_image">Profile image</string>
     <string name="profile_page_banner">Banner</string>
+
+    <string name="create_post_create_a_new_post">Create a new post</string>
+    <string name="create_post_choose_image">Choose image</string>
+    <string name="create_post_description">Description</string>
+    <string name="create_post">Post</string>
+
 </resources>
