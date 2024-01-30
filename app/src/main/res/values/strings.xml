@@ -25,4 +25,6 @@
     <string name="main_feed_your_feed">Your feed</string>
     <string name="main_feed_read_more">Read more</string>
 
+    <string name="profile_page_image">Profile image</string>
+    <string name="profile_page_banner">Banner</string>
 </resources>
