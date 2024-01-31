@@ -32,7 +32,7 @@ import com.example.socialnetwork.common.components.StandardToolbar
 import com.example.socialnetwork.ui.theme.SpaceLarge
 import com.example.socialnetwork.ui.theme.SpaceMedium
 import com.example.socialnetwork.ui.theme.SpaceSmall
-import com.plcoding.socialnetworktwitch.presentation.util.states.StandardTextFieldState
+import com.example.socialnetwork.common.states.StandardTextFieldState
 
 @Composable
 fun CreatePostScreen(

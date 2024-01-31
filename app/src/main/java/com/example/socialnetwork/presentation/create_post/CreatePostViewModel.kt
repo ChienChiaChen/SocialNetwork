@@ -3,7 +3,7 @@ package com.example.socialnetwork.presentation.create_post
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.plcoding.socialnetworktwitch.presentation.util.states.StandardTextFieldState
+import com.example.socialnetwork.common.states.StandardTextFieldState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
