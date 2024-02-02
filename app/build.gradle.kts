@@ -59,6 +59,7 @@ dependencies {
     // Coroutine Lifecycle Scopes
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.lifecycle.viewmodel.ktx)
+    implementation(libs.lifecycle.compose.ktx)
 
     // Dagger - Hilt
     implementation(libs.dagger.hilt.navigation.compose)
@@ -84,4 +85,5 @@ dependencies {
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
 }

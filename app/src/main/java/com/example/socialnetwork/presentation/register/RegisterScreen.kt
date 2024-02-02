@@ -12,6 +12,8 @@ import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -21,19 +23,29 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.example.socialnetwork.R
 import com.example.socialnetwork.common.Constants
+import com.example.socialnetwork.common.Screen
 import com.example.socialnetwork.common.components.StandardTextField
 import com.example.socialnetwork.ui.theme.SpaceLarge
 import com.example.socialnetwork.ui.theme.SpaceMedium
-import com.example.socialnetwork.R
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun RegisterScreen(
     navController: NavController,
     viewModel: RegisterViewModel = hiltViewModel()
 ) {
-    val state = viewModel.state.value
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.effect.collectLatest {
+            navController.navigate(Screen.LoginScreen.route)
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -58,15 +70,17 @@ fun RegisterScreen(
             StandardTextField(
                 text = state.emailText,
                 onValueChange = {
-                    viewModel.onEvent(RegisterEvent.EnteredEmail(it))
+                    viewModel.onEvent(RegisterContract.RegisterEvent.EnteredEmail(it))
                 },
                 error = when (state.emailError) {
                     RegisterState.EmailError.FieldEmpty -> {
                         stringResource(id = R.string.register_page_invalid_empty)
                     }
-                    RegisterState.EmailError.InvalidEmail -> {
+
+                    RegisterState.EmailError.Invalid -> {
                         stringResource(id = R.string.register_page_invalid_email)
                     }
+
                     null -> ""
                 },
                 keyboardType = KeyboardType.Email,
@@ -76,15 +90,24 @@ fun RegisterScreen(
             StandardTextField(
                 text = state.usernameText,
                 onValueChange = {
-                    viewModel.onEvent(RegisterEvent.EnteredUsername(it))
+                    viewModel.onEvent(RegisterContract.RegisterEvent.EnteredUsername(it))
                 },
                 error = when (state.usernameError) {
                     RegisterState.UsernameError.FieldEmpty -> {
                         stringResource(id = R.string.register_page_invalid_empty)
                     }
+
                     RegisterState.UsernameError.InputTooShort -> {
-                        stringResource(id = R.string.register_page_invalid_too_short, Constants.MIN_USERNAME_LENGTH)
+                        stringResource(
+                            id = R.string.register_page_invalid_too_short,
+                            Constants.MIN_USERNAME_LENGTH
+                        )
                     }
+
+                    RegisterState.UsernameError.Invalid -> {
+                        stringResource(id = R.string.register_page_invalid,)
+                    }
+
                     null -> ""
                 },
                 hint = stringResource(id = R.string.register_page_username)
@@ -93,7 +116,7 @@ fun RegisterScreen(
             StandardTextField(
                 text = state.passwordText,
                 onValueChange = {
-                    viewModel.onEvent(RegisterEvent.EnteredPassword(it))
+                    viewModel.onEvent(RegisterContract.RegisterEvent.EnteredPassword(it))
                 },
                 hint = stringResource(id = R.string.register_page_password_hint),
                 keyboardType = KeyboardType.Password,
@@ -101,23 +124,61 @@ fun RegisterScreen(
                     RegisterState.PasswordError.FieldEmpty -> {
                         stringResource(id = R.string.register_page_invalid_empty)
                     }
+
                     RegisterState.PasswordError.InputTooShort -> {
-                        stringResource(id = R.string.register_page_invalid_too_short, Constants.MIN_PASSWORD_LENGTH)
+                        stringResource(
+                            id = R.string.register_page_invalid_too_short,
+                            Constants.MIN_PASSWORD_LENGTH
+                        )
                     }
-                    RegisterState.PasswordError.InvalidPassword -> {
+
+                    RegisterState.PasswordError.Invalid -> {
                         stringResource(id = R.string.register_page_invalid_password)
                     }
+
                     null -> ""
                 },
                 isPasswordVisible = state.isPasswordVisible,
                 onPasswordToggleClick = {
-                    viewModel.onEvent(RegisterEvent.TogglePasswordVisibility)
+                    viewModel.onEvent(RegisterContract.RegisterEvent.TogglePasswordVisibility)
+                }
+            )
+            Spacer(modifier = Modifier.height(SpaceMedium))
+            StandardTextField(
+                text = state.confirmPasswordText,
+                onValueChange = {
+                    viewModel.onEvent(RegisterContract.RegisterEvent.EnteredConfirmPassword(it))
+                },
+                hint = stringResource(id = R.string.register_page_confirmed_password_hint),
+                keyboardType = KeyboardType.Password,
+                error = when (state.confirmPasswordError) {
+                    RegisterState.ConfirmPasswordError.FieldEmpty -> {
+                        stringResource(id = R.string.register_page_invalid_empty)
+                    }
+
+                    RegisterState.ConfirmPasswordError.InputTooShort -> {
+                        stringResource(
+                            id = R.string.register_page_invalid_too_short,
+                            Constants.MIN_PASSWORD_LENGTH
+                        )
+                    }
+
+                    RegisterState.ConfirmPasswordError.Invalid,
+                    RegisterState.ConfirmPasswordError.NotMatch -> {
+                        stringResource(id = R.string.register_page_invalid_password)
+                    }
+
+                    null -> ""
+                },
+                isPasswordVisible = state.isPasswordVisible,
+                onPasswordToggleClick = {
+                    viewModel.onEvent(RegisterContract.RegisterEvent.TogglePasswordVisibility)
                 }
             )
             Spacer(modifier = Modifier.height(SpaceMedium))
             Button(
                 onClick = {
-                    viewModel.onEvent(RegisterEvent.Register)
+                    viewModel.onEvent(RegisterContract.RegisterEvent.Register)
                 },
                 modifier = Modifier
                     .align(Alignment.End)
@@ -134,9 +195,7 @@ fun RegisterScreen(
                 append(" ")
                 val signUpText = stringResource(id = R.string.register_page_sign_in)
                 withStyle(
-                    style = SpanStyle(
-                        color = MaterialTheme.colors.primary
-                    )
+                    style = SpanStyle(color = MaterialTheme.colors.primary)
                 ) {
                     append(signUpText)
                 }

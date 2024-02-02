@@ -1,7 +1,8 @@
 package com.example.socialnetwork.domain
 
 data class User(
-    val profilePictureUrl: String,
     val username: String,
-    val description: String,
+    val email:String,
+    val profilePictureUrl: String = "",
+    val description: String? = "",
 )

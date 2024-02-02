@@ -6,7 +6,7 @@ interface AccountRepository {
     val currentUserId: String
     val hasUser: Boolean
 
-    suspend fun register(email: String, password: String): DataResult<Unit>
+    suspend fun register(username:String, email: String, password: String): DataResult<Unit>
     suspend fun login(email: String, password: String): DataResult<Unit>
     suspend fun logout(): DataResult<Unit>
 }

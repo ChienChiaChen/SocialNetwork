@@ -24,7 +24,7 @@ espresso-core = { group = "androidx.test.espresso", name = "espresso-core", vers
 #Coroutine Lifecycle Scopes
 lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
 lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle-runtime-ktx" }
-
+lifecycle-compose-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle-runtime-ktx" }
 #compose
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
@@ -38,6 +38,7 @@ dagger-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigat
 # firebase
 firebase-bom = {group = "com.google.firebase", name= "firebase-bom", version.ref = "firebase-bom"}
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth" }
+firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore" }
 
 ui = { group = "androidx.compose.ui", name = "ui" }
 ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }

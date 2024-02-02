@@ -16,7 +16,9 @@
     <string name="register_page_invalid_empty">This field can\'t be empty</string>
     <string name="register_page_invalid_too_short">The minimum length is %d</string>
     <string name="register_page_username">Username</string>
+    <string name="register_page_invalid">Plz Change to another username</string>
     <string name="register_page_password_hint">@string/login_page_password_hint</string>
+    <string name="register_page_confirmed_password_hint">Input password again</string>
     <string name="register_page_invalid_password">The password needs to contain at least one uppercase letter and one number</string>
     <string name="register_page_already_have_an_account">Already have an account?</string>
     <string name="register_page_sign_in">Sign in!</string>

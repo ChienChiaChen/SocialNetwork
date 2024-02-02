@@ -1,27 +1,41 @@
 package com.example.socialnetwork.data.repository
 
-import com.example.socialnetwork.common.wrapper.DataResult
 import com.example.socialnetwork.common.exception.NetworkException
+import com.example.socialnetwork.common.wrapper.DataResult
 import com.example.socialnetwork.data.connectivity.ConnectivityChecker
+import com.example.socialnetwork.domain.User
 import com.example.socialnetwork.domain.repository.AccountRepository
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class AccountRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
+    private val store: FirebaseFirestore,
     private val connectivityChecker: ConnectivityChecker,
 ) : AccountRepository {
+
+    companion object {
+        private const val USERS = "users"
+    }
+
+    private val users = store.collection(USERS)
 
     override val currentUserId: String = auth.currentUser?.uid.orEmpty()
     override val hasUser: Boolean
         get() = auth.currentUser != null
 
-    override suspend fun register(email: String, password: String): DataResult<Unit> {
+    override suspend fun register(
+        username: String,
+        email: String,
+        password: String
+    ): DataResult<Unit> {
         if (!connectivityChecker.hasInternetAccess()) {
             return DataResult.Error(NetworkException.NetworkUnavailable)
         }
         auth.createUserWithEmailAndPassword(email, password).await()
+        users.document(username).set(User(username, email)).await()
         return DataResult.Success(Unit)
     }
 

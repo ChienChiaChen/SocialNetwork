@@ -102,6 +102,7 @@ fun ProfileScreen(
                         profilePictureUrl = "",
                         username = "Jason Chien",
                         description = "Jason Chien from TW",
+                        email = ""
                     )
                 )
             }
