@@ -1,37 +1,72 @@
 package com.example.socialnetwork.presentation.login
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.socialnetwork.common.SingleSharedFlow
+import com.example.socialnetwork.common.error.toLoginEmailErrorState
+import com.example.socialnetwork.common.error.toLoginPasswordErrorState
+import com.example.socialnetwork.common.wrapper.DataResult
+import com.example.socialnetwork.domain.usecase.auth.login.HasUserUseCase
+import com.example.socialnetwork.domain.usecase.auth.login.LoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor():ViewModel(){
-    private val _usernameText = mutableStateOf("")
-    val usernameText: State<String> = _usernameText
+class LoginViewModel @Inject constructor(
+    private val loginUseCase: LoginUseCase,
+    private val hasUserUseCase: HasUserUseCase
+) : ViewModel() {
 
-    private val _passwordText = mutableStateOf("")
-    val passwordText: State<String> = _passwordText
+    private val _state = MutableStateFlow(LoginState())
+    val state: StateFlow<LoginState> = _state
 
-    private val _showPassword = mutableStateOf(false)
-    val showPassword: State<Boolean> = _showPassword
+    private val _effect = SingleSharedFlow<LoginContract.LoginEffect>()
+    val effect: SharedFlow<LoginContract.LoginEffect> = _effect
 
-    private val _usernameError = mutableStateOf("")
-    val usernameError: State<String> = _usernameError
+    fun onEvent(event: LoginContract.LoginEvent) {
+        when (event) {
+            is LoginContract.LoginEvent.HasUser -> {
+                val hasUser = hasUserUseCase.invoke()
+                _effect.tryEmit(LoginContract.LoginEffect.HasUser(hasUser))
+            }
 
-    private val _passwordError = mutableStateOf("")
-    val passwordError: State<String> = _passwordError
+            is LoginContract.LoginEvent.EnteredEmail ->
+                _state.value = _state.value.copy(emailText = event.value)
 
-    fun setUsernameText(username: String) {
-        _usernameText.value = username
-    }
+            is LoginContract.LoginEvent.EnteredPassword ->
+                _state.value = _state.value.copy(passwordText = event.value)
 
-    fun setPasswordText(password: String) {
-        _passwordText.value = password
-    }
+            is LoginContract.LoginEvent.TogglePasswordVisibility ->
+                _state.value =
+                    _state.value.copy(isPasswordVisible = !_state.value.isPasswordVisible)
 
-    fun setShowPassword(showPassword: Boolean) {
-        _showPassword.value = showPassword
+            is LoginContract.LoginEvent.Login -> {
+                viewModelScope.launch {
+                    val tempState = state.value
+                    val loginResult = loginUseCase(tempState.emailText, tempState.passwordText)
+
+                    _state.value = _state.value.copy(
+                        emailError = loginResult.emailError?.toLoginEmailErrorState(),
+                        passwordError = loginResult.emailError?.toLoginPasswordErrorState()
+                    )
+
+                    when (loginResult.result) {
+                        is DataResult.Success<*> -> {
+                            _effect.tryEmit(LoginContract.LoginEffect.NavigateTo)
+                        }
+
+                        is DataResult.Error<*> -> {
+                            // send Error msg
+                        }
+
+                        null -> return@launch
+                    }
+                }
+            }
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.socialnetwork.common.error
 
+import com.example.socialnetwork.presentation.login.LoginState
 import com.example.socialnetwork.presentation.register.RegisterState
 
 sealed class AuthError : Error() {
@@ -47,4 +48,20 @@ fun AuthError?.toConfirmPasswordErrorState(): RegisterState.ConfirmPasswordError
     }
 }
 
+fun AuthError?.toLoginEmailErrorState(): LoginState.EmailError? {
+    return when (this) {
+        AuthError.EmptyField -> LoginState.EmailError.FieldEmpty
+        null -> null
+        else -> LoginState.EmailError.Invalid
+    }
+}
+
+fun AuthError?.toLoginPasswordErrorState(): LoginState.PasswordError? {
+    return when (this) {
+        AuthError.EmptyField -> LoginState.PasswordError.FieldEmpty
+        AuthError.InputTooShort -> LoginState.PasswordError.InputTooShort
+        null -> null
+        else -> LoginState.PasswordError.Invalid
+    }
+}
 

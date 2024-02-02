@@ -8,7 +8,7 @@ import com.example.socialnetwork.common.error.toEmailErrorState
 import com.example.socialnetwork.common.error.toPasswordErrorState
 import com.example.socialnetwork.common.error.toUserNameErrorState
 import com.example.socialnetwork.common.wrapper.DataResult
-import com.example.socialnetwork.domain.usecase.auth.signup.SignUpUseCase
+import com.example.socialnetwork.domain.usecase.auth.register.RegisterUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
-    private val signUpUseCase: SignUpUseCase
+    private val registerUseCase: RegisterUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow(RegisterState())
     val state: StateFlow<RegisterState> = _state
@@ -47,7 +47,7 @@ class RegisterViewModel @Inject constructor(
             is RegisterContract.RegisterEvent.Register -> {
                 viewModelScope.launch {
                     val tempState = state.value
-                    val signUpResult = signUpUseCase.invoke(
+                    val signUpResult = registerUseCase.invoke(
                         tempState.emailText,
                         tempState.usernameText,
                         tempState.passwordText,

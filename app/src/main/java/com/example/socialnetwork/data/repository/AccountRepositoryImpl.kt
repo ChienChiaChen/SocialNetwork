@@ -2,6 +2,7 @@ package com.example.socialnetwork.data.repository
 
 import com.example.socialnetwork.common.exception.NetworkException
 import com.example.socialnetwork.common.wrapper.DataResult
+import com.example.socialnetwork.common.wrapper.getResult
 import com.example.socialnetwork.data.connectivity.ConnectivityChecker
 import com.example.socialnetwork.domain.User
 import com.example.socialnetwork.domain.repository.AccountRepository
@@ -34,24 +35,30 @@ class AccountRepositoryImpl @Inject constructor(
         if (!connectivityChecker.hasInternetAccess()) {
             return DataResult.Error(NetworkException.NetworkUnavailable)
         }
-        auth.createUserWithEmailAndPassword(email, password).await()
-        users.document(username).set(User(username, email)).await()
-        return DataResult.Success(Unit)
+        return getResult {
+            auth.createUserWithEmailAndPassword(email, password).await()
+            users.document(username).set(User(username, email)).await()
+        }
+
     }
 
     override suspend fun login(email: String, password: String): DataResult<Unit> {
         if (!connectivityChecker.hasInternetAccess()) {
             return DataResult.Error(NetworkException.NetworkUnavailable)
         }
-        auth.signInWithEmailAndPassword(email, password).await()
-        return DataResult.Success(Unit)
+
+        return getResult {
+            auth.signInWithEmailAndPassword(email, password).await()
+        }
     }
 
     override suspend fun logout(): DataResult<Unit> {
         if (!connectivityChecker.hasInternetAccess()) {
             return DataResult.Error(NetworkException.NetworkUnavailable)
         }
-        auth.signOut()
-        return DataResult.Success(Unit)
+
+        return getResult {
+            auth.signOut()
+        }
     }
 }
