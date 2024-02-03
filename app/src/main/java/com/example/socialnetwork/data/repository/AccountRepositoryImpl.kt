@@ -8,6 +8,7 @@ import com.example.socialnetwork.domain.User
 import com.example.socialnetwork.domain.repository.AccountRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -57,6 +58,17 @@ class AccountRepositoryImpl @Inject constructor(
 
         return getResult {
             auth.signOut()
+        }
+    }
+
+    override suspend fun fetchCurrentUser(): DataResult<User> {
+        if (!connectivityChecker.hasInternetAccess()) {
+            return DataResult.Error(NetworkException.NetworkUnavailable)
+        }
+
+        return getResult {
+            users.document(currentUserId)
+                .get().await().toObject<User>()?: return DataResult.Error(NetworkException.NotAuthorized)
         }
     }
 

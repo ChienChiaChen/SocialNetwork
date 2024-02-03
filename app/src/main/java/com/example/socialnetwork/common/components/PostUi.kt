@@ -21,18 +21,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.example.socialnetwork.R
 import com.example.socialnetwork.domain.Post
-import com.example.socialnetwork.ui.theme.HintGray
 import com.example.socialnetwork.ui.theme.MediumGray
 import com.example.socialnetwork.ui.theme.ProfilePictureSizeMedium
 import com.example.socialnetwork.ui.theme.SpaceMedium
@@ -51,17 +47,21 @@ fun PostUi(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .offset(y = if (showProfileImage) {
-                    ProfilePictureSizeMedium / 2f
-                } else 0.dp)
+                .offset(
+                    y = if (showProfileImage) {
+                        ProfilePictureSizeMedium / 2f
+                    } else 0.dp
+                )
                 .clip(MaterialTheme.shapes.medium)
                 .shadow(5.dp)
                 .background(MediumGray)
         ) {
-            Image(
-                painterResource(id = R.drawable.eva),
-                contentDescription = "Post image"
-            )
+            if (post.imageUrl.isNotBlank()) {
+                AsyncImage(
+                    model  =  post.imageUrl,
+                    contentDescription = "Post image",
+                )
+            }
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -76,20 +76,7 @@ fun PostUi(
                 )
                 Spacer(modifier = Modifier.height(SpaceMedium))
                 Text(
-                    text = buildAnnotatedString {
-                        append(post.description)
-                        withStyle(
-                            SpanStyle(
-                                color = HintGray,
-                            )
-                        ) {
-                            append(
-                                LocalContext.current.getString(
-                                    R.string.main_feed_read_more
-                                )
-                            )
-                        }
-                    },
+                    text = post.description,
                     style = MaterialTheme.typography.body2,
                     overflow = TextOverflow.Ellipsis,
                 )

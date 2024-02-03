@@ -10,7 +10,9 @@ import com.example.socialnetwork.domain.User
 import com.example.socialnetwork.domain.repository.PostRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.toObject
+import com.google.firebase.firestore.toObjects
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -37,17 +39,19 @@ class PostRepositoryImpl @Inject constructor(
         val userData = user.document(currentUser.uid)
             .get().await().toObject<User>() ?: return DataResult.Error(NetworkException.NoData)
 
-        if (imageUri.isNotBlank()) {
+        val downloadUrl = if (imageUri.isNotBlank()) {
             val uri = imageUri.toUri().pathSegments.last()
-            image.child(uri).putFile(imageUri.toUri()).await()
-        }
+            val imageRef = image.child(uri)
+            imageRef.putFile(imageUri.toUri()).await()
+            imageRef.downloadUrl.await().toString()
+        } else ""
 
         return getResult {
             post.add(
                 Post(
                     currentUser.uid,
                     userData.username,
-                    imageUri,
+                    downloadUrl,
                     userData.profilePictureUrl,
                     description
                 )
@@ -55,8 +59,20 @@ class PostRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun fetchCurrentUserPost(): DataResult<List<Post>> {
+        val uid = auth.currentUser?.uid ?: return DataResult.Error(NetworkException.NotAuthorized)
+        return getResult {
+            post.whereEqualTo(UID_FIELD, uid)
+                .orderBy(CREATED_AT_FIELD, Query.Direction.DESCENDING)
+                .get().await().toObjects<Post>()
+        }
+    }
+
     companion object {
         private const val POST = "Post"
         private const val IMAGES = "images"
+        private const val CREATED_AT_FIELD = "createdAt"
+        private const val UID_FIELD = "uid"
+
     }
 }
