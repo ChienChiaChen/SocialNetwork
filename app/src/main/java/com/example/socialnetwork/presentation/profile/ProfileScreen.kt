@@ -113,12 +113,11 @@ fun ProfileScreen(
                 )
                 PostUi(
                     post = Post(
+                        uid = "",
                         username = "Jason Chien",
                         imageUrl = "",
                         profilePictureUrl = "",
-                        description = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed\n" +
-                                "diam nonumy eirmod tempor invidunt ut labore et dolore \n" +
-                                "magna aliquyam erat, sed diam voluptua...",
+                        description = "",
                     ),
                     showProfileImage = false,
 

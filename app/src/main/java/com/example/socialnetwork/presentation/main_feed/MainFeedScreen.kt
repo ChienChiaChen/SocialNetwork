@@ -35,6 +35,7 @@ fun MainFeedScreen(
         )
         PostUi(
             post = Post(
+                uid = "",
                 username = "Jason Chien",
                 imageUrl = "",
                 profilePictureUrl = "",

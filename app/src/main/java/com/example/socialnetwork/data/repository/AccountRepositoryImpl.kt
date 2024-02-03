@@ -17,10 +17,6 @@ class AccountRepositoryImpl @Inject constructor(
     private val connectivityChecker: ConnectivityChecker,
 ) : AccountRepository {
 
-    companion object {
-        private const val USERS = "users"
-    }
-
     private val users = store.collection(USERS)
 
     override val currentUserId: String = auth.currentUser?.uid.orEmpty()
@@ -37,7 +33,9 @@ class AccountRepositoryImpl @Inject constructor(
         }
         return getResult {
             auth.createUserWithEmailAndPassword(email, password).await()
-            users.document(username).set(User(username, email)).await()
+            auth.currentUser?.uid?.let { uid ->
+                users.document(uid).set(User(username, email)).await()
+            }
         }
 
     }
@@ -60,5 +58,9 @@ class AccountRepositoryImpl @Inject constructor(
         return getResult {
             auth.signOut()
         }
+    }
+
+    companion object {
+        const val USERS = "users"
     }
 }
