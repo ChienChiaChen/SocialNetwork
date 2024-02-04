@@ -69,8 +69,8 @@ class PostRepositoryImpl @Inject constructor(
     }
 
     companion object {
+        public const val IMAGES = "images"
         private const val POST = "Post"
-        private const val IMAGES = "images"
         private const val CREATED_AT_FIELD = "createdAt"
         private const val UID_FIELD = "uid"
 

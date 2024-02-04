@@ -1,5 +1,6 @@
 package com.example.socialnetwork.data.repository
 
+import androidx.core.net.toUri
 import com.example.socialnetwork.common.exception.NetworkException
 import com.example.socialnetwork.common.wrapper.DataResult
 import com.example.socialnetwork.common.wrapper.getResult
@@ -9,12 +10,14 @@ import com.example.socialnetwork.domain.repository.AccountRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class AccountRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
     private val store: FirebaseFirestore,
+    private val storage: FirebaseStorage,
     private val connectivityChecker: ConnectivityChecker,
 ) : AccountRepository {
 
@@ -23,6 +26,10 @@ class AccountRepositoryImpl @Inject constructor(
     override val currentUserId: String = auth.currentUser?.uid.orEmpty()
     override val hasUser: Boolean
         get() = auth.currentUser != null
+
+    private val image = storage.reference.child("${PostRepositoryImpl.IMAGES}/")
+    private val user = store.collection(USERS)
+
 
     override suspend fun register(
         username: String,
@@ -68,7 +75,31 @@ class AccountRepositoryImpl @Inject constructor(
 
         return getResult {
             users.document(currentUserId)
-                .get().await().toObject<User>()?: return DataResult.Error(NetworkException.NotAuthorized)
+                .get().await().toObject<User>()
+                ?: return DataResult.Error(NetworkException.NotAuthorized)
+        }
+    }
+
+    override suspend fun updateCurrentUser(profilePictureUrl: String): DataResult<User> {
+        if (!connectivityChecker.hasInternetAccess()) {
+            return DataResult.Error(NetworkException.NetworkUnavailable)
+        }
+        val userData = user.document(currentUserId)
+            .get().await().toObject<User>() ?: return DataResult.Error(NetworkException.NoData)
+
+        val downloadUrl = if (profilePictureUrl.isNotBlank()) {
+            val uri = profilePictureUrl.toUri().pathSegments.last()
+            val imageRef = image.child(uri)
+            imageRef.putFile(profilePictureUrl.toUri()).await()
+            imageRef.downloadUrl.await().toString()
+        } else ""
+
+        return getResult {
+            val updatedUser = userData.copy(profilePictureUrl = downloadUrl)
+            users.document(currentUserId).set(
+                updatedUser
+            ).await()
+            updatedUser
         }
     }
 

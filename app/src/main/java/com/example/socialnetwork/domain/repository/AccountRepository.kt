@@ -12,4 +12,5 @@ interface AccountRepository {
     suspend fun logout(): DataResult<Unit>
 
     suspend fun fetchCurrentUser(): DataResult<User>
+    suspend fun updateCurrentUser(profilePictureUrl: String): DataResult<User>
 }

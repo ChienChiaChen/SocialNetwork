@@ -1,7 +1,9 @@
 package com.example.socialnetwork.presentation.profile
 
-import androidx.compose.foundation.Image
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -30,13 +32,14 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.socialnetwork.R
 import com.example.socialnetwork.common.components.BannerSection
 import com.example.socialnetwork.common.components.PostUi
@@ -51,9 +54,19 @@ fun ProfileScreen(
     profilePictureSize: Dp = ProfilePictureSizeLarge,
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
-
+    val userState by viewModel.profileState.collectAsStateWithLifecycle()
+    val toolbarUpdatedState by viewModel.toolbarState.collectAsStateWithLifecycle()
     val lifecycleOwner = LocalLifecycleOwner.current
     val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
+
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri ->
+            uri?.let {
+                viewModel.onEvent(ProfileContract.ProfileEvent.EnteredImageUri(it.toString()))
+            }
+        }
+    )
 
     LaunchedEffect(lifecycleState) {
         if (lifecycleState == Lifecycle.State.RESUMED) {
@@ -63,7 +76,6 @@ fun ProfileScreen(
     }
 
     val lazyListState = rememberLazyListState()
-    val toolbarState = viewModel.toolbarState.value
     val toolbarHeightCollapsed = 75.dp
     val imageCollapsedOffsetY = remember {
         (toolbarHeightCollapsed - profilePictureSize / 2f) / 2f
@@ -115,10 +127,10 @@ fun ProfileScreen(
             }
             item {
                 ProfileHeaderSection(
-                    user = viewModel.profileState.value.user
+                    user = userState.user
                 )
             }
-            items(viewModel.profileState.value.post) { post ->
+            items(userState.post) { post ->
                 Spacer(
                     modifier = Modifier
                         .height(SpaceMedium)
@@ -134,25 +146,25 @@ fun ProfileScreen(
         ) {
             BannerSection(
                 modifier = Modifier.height(
-                    (bannerHeight * toolbarState.expandedRatio).coerceIn(
+                    (bannerHeight * toolbarUpdatedState.expandedRatio).coerceIn(
                         minimumValue = toolbarHeightCollapsed,
                         maximumValue = bannerHeight
                     )
                 )
             )
-            Image(
-                painter = painterResource(id = R.drawable.eva_avatar),
+            AsyncImage(
+                model = userState.user.profilePictureUrl,
                 contentDescription = stringResource(id = R.string.profile_page_image),
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .graphicsLayer {
                         translationY = -profilePictureSize.toPx() / 2f -
-                                (1f - toolbarState.expandedRatio) * imageCollapsedOffsetY.toPx()
+                                (1f - toolbarUpdatedState.expandedRatio) * imageCollapsedOffsetY.toPx()
                         transformOrigin = TransformOrigin(
                             pivotFractionX = 0.5f,
                             pivotFractionY = 0f
                         )
-                        val scale = 0.5f + toolbarState.expandedRatio * 0.5f
+                        val scale = 0.5f + toolbarUpdatedState.expandedRatio * 0.5f
                         scaleX = scale
                         scaleY = scale
                     }
@@ -163,6 +175,7 @@ fun ProfileScreen(
                         color = MaterialTheme.colors.onSurface,
                         shape = CircleShape
                     )
+                    .clickable { galleryLauncher.launch("image/*") },
             )
         }
     }
