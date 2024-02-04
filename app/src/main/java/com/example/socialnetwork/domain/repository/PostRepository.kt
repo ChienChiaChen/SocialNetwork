@@ -7,5 +7,6 @@ interface PostRepository {
     suspend fun createPost(description: String, imageUri: String): DataResult<Unit>
 
     suspend fun fetchCurrentUserPost(): DataResult<List<Post>>
+    suspend fun fetchAllUserPost(): DataResult<List<Post>>
 
 }

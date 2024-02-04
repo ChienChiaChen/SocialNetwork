@@ -68,6 +68,13 @@ class PostRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun fetchAllUserPost(): DataResult<List<Post>> {
+        return getResult {
+            post.orderBy(CREATED_AT_FIELD, Query.Direction.DESCENDING)
+                .get().await().toObjects<Post>()
+        }
+    }
+
     companion object {
         public const val IMAGES = "images"
         private const val POST = "Post"
