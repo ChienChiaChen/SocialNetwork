@@ -1,4 +1,4 @@
-package com.example.socialnetwork.common.profile
+package com.example.socialnetwork.common.components.profile
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -44,7 +45,7 @@ import coil.compose.SubcomposeAsyncImage
 import com.example.socialnetwork.R
 import com.example.socialnetwork.common.components.BannerSection
 import com.example.socialnetwork.common.components.PostUi
-import com.example.socialnetwork.common.profile.ProfileHeaderSection
+import com.example.socialnetwork.common.components.profile.ProfileHeaderSection
 import com.example.socialnetwork.common.toPx
 import com.example.socialnetwork.ui.theme.ProfilePictureSizeLarge
 import com.example.socialnetwork.ui.theme.SpaceMedium
@@ -125,8 +126,8 @@ fun ProfileScreen(
         } else {
             LazyColumn(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(0.dp, 0.dp, 0.dp, 65.dp),
+                    .fillMaxSize(),
+                contentPadding = PaddingValues(bottom = 50.dp),
                 state = lazyListState
             ) {
 

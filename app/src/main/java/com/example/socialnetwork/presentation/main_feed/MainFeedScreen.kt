@@ -2,11 +2,11 @@ package com.example.socialnetwork.presentation.main_feed
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -50,7 +50,7 @@ fun MainFeedScreen(
 
     val lazyListState = rememberLazyListState()
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth()
     ) {
         StandardToolbar(
             navController = navController,
@@ -76,8 +76,8 @@ fun MainFeedScreen(
         } else {
             LazyColumn(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(0.dp, 0.dp, 0.dp, 65.dp),
+                    .fillMaxSize(),
+                contentPadding = PaddingValues(bottom = 90.dp),
                 state = lazyListState
             ) {
                 items(postState.post) { post ->
@@ -91,3 +91,5 @@ fun MainFeedScreen(
         }
     }
 }
+// TODO: unit test.
+// delete post
