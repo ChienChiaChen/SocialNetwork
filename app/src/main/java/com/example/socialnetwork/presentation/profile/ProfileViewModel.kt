@@ -2,6 +2,7 @@ package com.example.socialnetwork.presentation.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.socialnetwork.common.exception.getStringResId
 import com.example.socialnetwork.common.wrapper.DataResult
 import com.example.socialnetwork.domain.Post
 import com.example.socialnetwork.domain.usecase.auth.user.FetchCurrentUserCase
@@ -46,7 +47,8 @@ class ProfileViewModel @Inject constructor(
                                 _profileState.value.copy(user = userInfo.data)
                         }
 
-                        is DataResult.Error -> {}
+                        is DataResult.Error -> _profileState.value =
+                            _profileState.value.copy(errorMsg = userInfo.exception.getStringResId())
                     }
                     _profileState.value = _profileState.value.copy(isUserInfoLoading = false)
                 }
@@ -61,8 +63,9 @@ class ProfileViewModel @Inject constructor(
                                 _profileState.value.copy(post = profileResult.data)
                         }
 
-                        is DataResult.Error<*> -> {
-                            // send Error msg
+                        is DataResult.Error -> {
+                            _profileState.value =
+                                _profileState.value.copy(errorMsg = profileResult.exception.getStringResId())
                         }
 
                         null -> return@launch
@@ -79,7 +82,10 @@ class ProfileViewModel @Inject constructor(
                                 _profileState.value.copy(user = userInfo.data)
                         }
 
-                        is DataResult.Error -> {}
+                        is DataResult.Error -> {
+                            _profileState.value =
+                                _profileState.value.copy(errorMsg = userInfo.exception.getStringResId())
+                        }
                     }
                 }
             }

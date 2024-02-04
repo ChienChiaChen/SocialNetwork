@@ -9,7 +9,6 @@ import com.example.socialnetwork.domain.Post
 import com.example.socialnetwork.domain.User
 import com.example.socialnetwork.domain.repository.PostRepository
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.toObject
@@ -37,7 +36,7 @@ class PostRepositoryImpl @Inject constructor(
             auth.currentUser ?: return DataResult.Error(NetworkException.NotAuthorized)
 
         val userData = user.document(currentUser.uid)
-            .get().await().toObject<User>() ?: return DataResult.Error(NetworkException.NoData)
+            .get().await().toObject<User>() ?: return DataResult.Error(NetworkException.NotFound)
 
         val downloadUrl = if (imageUri.isNotBlank()) {
             val uri = imageUri.toUri().pathSegments.last()

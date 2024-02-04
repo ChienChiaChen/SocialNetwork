@@ -87,7 +87,7 @@ class AccountRepositoryImpl @Inject constructor(
             return DataResult.Error(NetworkException.NetworkUnavailable)
         }
         val userData = user.document(currentUserId)
-            .get().await().toObject<User>() ?: return DataResult.Error(NetworkException.NoData)
+            .get().await().toObject<User>() ?: return DataResult.Error(NetworkException.NotFound)
 
         val downloadUrl = if (profilePictureUrl.isNotBlank()) {
             val uri = profilePictureUrl.toUri().pathSegments.last() //To cut out file name
