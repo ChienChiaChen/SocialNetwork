@@ -76,20 +76,21 @@ fun PostUi(
                     }
                 )
                 Spacer(modifier = Modifier.height(SpaceMedium))
-                Box(
+                Row(
                     modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
                         text = post.description,
-                        style = MaterialTheme.typography.body1,
+                        style = MaterialTheme.typography.body2,
                         overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f,true)
                     )
 
                     Text(
                         text = DateUtils.format(post.createdAt),
                         style = MaterialTheme.typography.body2,
                         modifier = Modifier
-                            .align(Alignment.CenterEnd),
                     )
                 }
 
