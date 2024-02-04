@@ -158,45 +158,55 @@ fun ProfileScreen(
         Column(
             modifier = Modifier.align(Alignment.TopCenter)
         ) {
-            BannerSection(
-                modifier = Modifier.height(
-                    (bannerHeight * toolbarUpdatedState.expandedRatio).coerceIn(
-                        minimumValue = toolbarHeightCollapsed,
-                        maximumValue = bannerHeight
-                    )
-                )
-            )
-            SubcomposeAsyncImage(
-                model = userState.user.profilePictureUrl.ifBlank { R.drawable.eva_avatar },
-                contentDescription = stringResource(id = R.string.profile_page_image),
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .graphicsLayer {
-                        translationY = -profilePictureSize.toPx() / 2f -
-                                (1f - toolbarUpdatedState.expandedRatio) * imageCollapsedOffsetY.toPx()
-                        transformOrigin = TransformOrigin(
-                            pivotFractionX = 0.5f,
-                            pivotFractionY = 0f
-                        )
-                        val scale = 0.5f + toolbarUpdatedState.expandedRatio * 0.5f
-                        scaleX = scale
-                        scaleY = scale
-                    }
-                    .size(profilePictureSize)
-                    .clip(CircleShape)
-                    .border(
-                        width = 1.dp,
-                        color = MaterialTheme.colors.onSurface,
-                        shape = CircleShape
-                    )
-                    .clickable { galleryLauncher.launch("image/*") },
-                loading = {
+            if (userState.isUserInfoLoading) {
+                Box(
+                    contentAlignment = Alignment.TopCenter,
+                    modifier = Modifier.fillMaxSize().padding(0.dp, 65.dp, 0.dp, 65.dp),
+                ) {
                     CircularProgressIndicator(
                         color = MaterialTheme.colors.onBackground
                     )
                 }
-            )
-
+            } else {
+                BannerSection(
+                    modifier = Modifier.height(
+                        (bannerHeight * toolbarUpdatedState.expandedRatio).coerceIn(
+                            minimumValue = toolbarHeightCollapsed,
+                            maximumValue = bannerHeight
+                        )
+                    )
+                )
+                SubcomposeAsyncImage(
+                    model = userState.user.profilePictureUrl.ifBlank { R.drawable.eva_avatar },
+                    contentDescription = stringResource(id = R.string.profile_page_image),
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .graphicsLayer {
+                            translationY = -profilePictureSize.toPx() / 2f -
+                                    (1f - toolbarUpdatedState.expandedRatio) * imageCollapsedOffsetY.toPx()
+                            transformOrigin = TransformOrigin(
+                                pivotFractionX = 0.5f,
+                                pivotFractionY = 0f
+                            )
+                            val scale = 0.5f + toolbarUpdatedState.expandedRatio * 0.5f
+                            scaleX = scale
+                            scaleY = scale
+                        }
+                        .size(profilePictureSize)
+                        .clip(CircleShape)
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colors.onSurface,
+                            shape = CircleShape
+                        )
+                        .clickable { galleryLauncher.launch("image/*") },
+                    loading = {
+                        CircularProgressIndicator(
+                            color = MaterialTheme.colors.onBackground
+                        )
+                    }
+                )
+            }
         }
     }
 

@@ -9,6 +9,7 @@ import com.example.socialnetwork.domain.Post
 import com.example.socialnetwork.domain.User
 import com.example.socialnetwork.domain.repository.PostRepository
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.toObject
@@ -24,8 +25,7 @@ class PostRepositoryImpl @Inject constructor(
     private val connectivityChecker: ConnectivityChecker
 ) : PostRepository {
 
-
-    private val post = store.collection(POST)
+    override val post = store.collection(POST)
     private val user = store.collection(AccountRepositoryImpl.USERS)
     private val image = storage.reference.child("$IMAGES/")
 
@@ -62,6 +62,7 @@ class PostRepositoryImpl @Inject constructor(
     override suspend fun fetchCurrentUserPost(): DataResult<List<Post>> {
         val uid = auth.currentUser?.uid ?: return DataResult.Error(NetworkException.NotAuthorized)
         return getResult {
+
             post.whereEqualTo(UID_FIELD, uid)
                 .orderBy(CREATED_AT_FIELD, Query.Direction.DESCENDING)
                 .get().await().toObjects<Post>()
@@ -79,6 +80,7 @@ class PostRepositoryImpl @Inject constructor(
         public const val IMAGES = "images"
         private const val POST = "Post"
         private const val CREATED_AT_FIELD = "createdAt"
+        public const val PROFILE_PICTURE_URL_FIELD = "profilePictureUrl"
         private const val UID_FIELD = "uid"
 
     }

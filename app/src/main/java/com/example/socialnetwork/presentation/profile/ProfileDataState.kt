@@ -6,5 +6,6 @@ import com.example.socialnetwork.domain.User
 data class ProfileDataState(
     val user: User = User(),
     val post: List<Post> = emptyList(),
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val isUserInfoLoading: Boolean = false
 )

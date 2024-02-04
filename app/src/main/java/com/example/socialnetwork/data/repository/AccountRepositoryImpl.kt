@@ -7,6 +7,7 @@ import com.example.socialnetwork.common.wrapper.getResult
 import com.example.socialnetwork.data.connectivity.ConnectivityChecker
 import com.example.socialnetwork.domain.User
 import com.example.socialnetwork.domain.repository.AccountRepository
+import com.example.socialnetwork.domain.repository.PostRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
@@ -19,6 +20,7 @@ class AccountRepositoryImpl @Inject constructor(
     private val store: FirebaseFirestore,
     private val storage: FirebaseStorage,
     private val connectivityChecker: ConnectivityChecker,
+    private val postRepository: PostRepository
 ) : AccountRepository {
 
     private val users = store.collection(USERS)
@@ -88,11 +90,14 @@ class AccountRepositoryImpl @Inject constructor(
             .get().await().toObject<User>() ?: return DataResult.Error(NetworkException.NoData)
 
         val downloadUrl = if (profilePictureUrl.isNotBlank()) {
-            val uri = profilePictureUrl.toUri().pathSegments.last()
-            val imageRef = image.child(uri)
-            imageRef.putFile(profilePictureUrl.toUri()).await()
-            imageRef.downloadUrl.await().toString()
-        } else ""
+            val uri = profilePictureUrl.toUri().pathSegments.last() //To cut out file name
+            val imageRef = image.child(uri)// To get Reference
+            imageRef.putFile(profilePictureUrl.toUri()).await()// To upload file
+            imageRef.downloadUrl.await().toString()// To get url for downloading in the future
+        } else return DataResult.Error(NetworkException.BadRequest)
+
+        // Update profile url in post.
+        if (updatePostToProfile(downloadUrl)) return DataResult.Error(NetworkException.BadRequest)
 
         return getResult {
             val updatedUser = userData.copy(profilePictureUrl = downloadUrl)
@@ -101,6 +106,16 @@ class AccountRepositoryImpl @Inject constructor(
             ).await()
             updatedUser
         }
+    }
+
+    private suspend fun updatePostToProfile(downloadUrl: String): Boolean {
+        val pastPost = (postRepository.fetchCurrentUserPost() as? DataResult.Success)
+            ?: return true
+        pastPost.data.forEach {
+            postRepository.post.document(it.id)
+                .update(PostRepositoryImpl.PROFILE_PICTURE_URL_FIELD, downloadUrl)
+        }
+        return false
     }
 
     companion object {

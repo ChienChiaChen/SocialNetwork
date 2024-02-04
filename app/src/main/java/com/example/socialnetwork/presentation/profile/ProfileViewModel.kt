@@ -38,6 +38,7 @@ class ProfileViewModel @Inject constructor(
     fun onEvent(event: ProfileContract.ProfileEvent) {
         when (event) {
             is ProfileContract.ProfileEvent.EnteredImageUri -> {
+                _profileState.value = _profileState.value.copy(isUserInfoLoading = true)
                 viewModelScope.launch {
                     when (val userInfo = updateCurrentUserCase.invoke(event.value)) {
                         is DataResult.Success -> {
@@ -47,6 +48,7 @@ class ProfileViewModel @Inject constructor(
 
                         is DataResult.Error -> {}
                     }
+                    _profileState.value = _profileState.value.copy(isUserInfoLoading = false)
                 }
             }
 
