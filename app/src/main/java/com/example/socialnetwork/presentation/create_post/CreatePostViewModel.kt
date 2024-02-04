@@ -3,6 +3,7 @@ package com.example.socialnetwork.presentation.create_post
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.socialnetwork.common.SingleSharedFlow
+import com.example.socialnetwork.common.exception.getStringResId
 import com.example.socialnetwork.common.wrapper.DataResult
 import com.example.socialnetwork.domain.usecase.post.CreatePostUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -35,12 +36,16 @@ class CreatePostViewModel @Inject constructor(
 
                 val state = _descriptionState.value
                 val postResult = createPost.invoke(state.text, state.imageUri)
-                when (postResult.result) {
+                when (val result = postResult.result) {
                     is DataResult.Success<*> -> _effect.tryEmit(CreatePostContract.CreatePostEffect.NavigateTo)
-                    is DataResult.Error<*> -> {}
+                    is DataResult.Error<*> -> {
+                        _descriptionState.value =
+                            _descriptionState.value.copy(error = result.exception.getStringResId())
+                    }
+
                     null -> return@launch
                 }
-                _descriptionState.value = _descriptionState.value.copy(isLoading = true)
+                _descriptionState.value = _descriptionState.value.copy(isLoading = false)
             }
         }
     }
