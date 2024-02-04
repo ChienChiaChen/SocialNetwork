@@ -2,6 +2,7 @@ package com.example.socialnetwork.presentation.main_feed
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.socialnetwork.common.exception.getStringResId
 import com.example.socialnetwork.common.wrapper.DataResult
 import com.example.socialnetwork.domain.Post
 import com.example.socialnetwork.domain.usecase.post.FetchAllPostUseCase
@@ -32,6 +33,8 @@ class MainFeedViewModel @Inject constructor(
 
                         is DataResult.Error<*> -> {
                             // send Error msg
+                            _mainFeedDataState.value =
+                                _mainFeedDataState.value.copy(errorMsg = profileResult.exception.getStringResId())
                         }
 
                         null -> return@launch

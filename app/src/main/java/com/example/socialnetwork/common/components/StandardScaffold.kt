@@ -14,8 +14,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.socialnetwork.R
 import com.example.socialnetwork.common.Screen
-import com.example.socialnetwork.domain.BottomNavItem
-
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")

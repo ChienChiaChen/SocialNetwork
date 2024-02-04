@@ -1,4 +1,4 @@
-package com.example.socialnetwork.domain
+package com.example.socialnetwork.common.components
 
 import androidx.compose.ui.graphics.vector.ImageVector
 
