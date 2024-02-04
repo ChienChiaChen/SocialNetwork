@@ -41,7 +41,7 @@ fun ProfileHeaderSection(
         }
         Spacer(modifier = Modifier.height(SpaceMedium))
         Text(
-            text = user.description.orEmpty(),
+            text = user.email,
             style = MaterialTheme.typography.body2,
             textAlign = TextAlign.Center
         )

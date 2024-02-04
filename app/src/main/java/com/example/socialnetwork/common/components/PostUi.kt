@@ -1,6 +1,5 @@
 package com.example.socialnetwork.common.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,34 +12,27 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Button
-import androidx.compose.material.Icon
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import com.example.socialnetwork.R
 import com.example.socialnetwork.common.DateUtils
 import com.example.socialnetwork.domain.Post
-import com.example.socialnetwork.presentation.create_post.CreatePostContract
 import com.example.socialnetwork.ui.theme.MediumGray
 import com.example.socialnetwork.ui.theme.ProfilePictureSizeMedium
 import com.example.socialnetwork.ui.theme.SpaceMedium
-import com.example.socialnetwork.ui.theme.SpaceSmall
 
 @Composable
 fun PostUi(
@@ -105,13 +97,18 @@ fun PostUi(
             }
         }
         if (showProfileImage) {
-            Image(
-                painterResource(id = R.drawable.eva_avatar),
-                contentDescription = "Profile picture",
+            SubcomposeAsyncImage(
+                model = post.profilePictureUrl.ifBlank { R.drawable.eva_avatar },
+                contentDescription = "Post image",
                 modifier = Modifier
                     .size(ProfilePictureSizeMedium)
                     .clip(CircleShape)
-                    .align(Alignment.TopCenter)
+                    .align(Alignment.TopEnd),
+                loading = {
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colors.onBackground
+                    )
+                }
             )
         }
     }

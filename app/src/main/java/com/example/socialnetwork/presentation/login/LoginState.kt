@@ -6,7 +6,8 @@ data class LoginState(
     val passwordText: String = "",
     val passwordError: PasswordError? = null,
     val isPasswordVisible: Boolean = false,
-    val hasUser:Boolean = false
+    val hasUser:Boolean = false,
+    val isLoading:Boolean = true
 ) {
     sealed class EmailError {
         object FieldEmpty : EmailError()

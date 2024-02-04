@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Button
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -24,12 +25,14 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.socialnetwork.R
@@ -45,6 +48,7 @@ fun CreatePostScreen(
     navController: NavController,
     viewModel: CreatePostViewModel = hiltViewModel()
 ) {
+    val postState by viewModel.descriptionState.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) {
         viewModel.effect.collectLatest {
             when (it) {
@@ -82,64 +86,75 @@ fun CreatePostScreen(
                 .fillMaxSize()
                 .padding(SpaceLarge)
         ) {
-            if (viewModel.descriptionState.value.imageUri.isNotBlank()) {
-                Image(
-                    painter = rememberAsyncImagePainter(model = viewModel.descriptionState.value.imageUri),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .aspectRatio(16f / 9f)
-                        .fillMaxHeight()
-                        .fillMaxWidth()
-                        .clickable { galleryLauncher.launch("image/*") },
-                )
-            } else {
+            if (postState.isLoading) {
                 Box(
-                    modifier = Modifier
-                        .aspectRatio(16f / 9f)
-                        .fillMaxWidth()
-                        .border(
-                            width = 1.dp,
-                            color = MaterialTheme.colors.onBackground,
-                            shape = MaterialTheme.shapes.medium
-                        )
-                        .clickable {
-                            galleryLauncher.launch("image/*")
-                        },
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = stringResource(id = R.string.create_post_choose_image),
-                        tint = MaterialTheme.colors.onBackground
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colors.onBackground
                     )
                 }
-            }
-            Spacer(modifier = Modifier.height(SpaceMedium))
-            StandardTextField(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                text = viewModel.descriptionState.value.text,
-                hint = stringResource(id = R.string.create_post_description),
-                error = viewModel.descriptionState.value.error,
-                singleLine = false,
-                maxLines = 5,
-                onValueChange = {
-                    viewModel.onEvent(CreatePostContract.CreatePostEvent.EnteredDescription(it))
+            } else {
+                if (postState.imageUri.isNotBlank()) {
+                    Image(
+                        painter = rememberAsyncImagePainter(model = postState.imageUri),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .aspectRatio(16f / 9f)
+                            .fillMaxHeight()
+                            .fillMaxWidth()
+                            .clickable { galleryLauncher.launch("image/*") },
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .aspectRatio(16f / 9f)
+                            .fillMaxWidth()
+                            .border(
+                                width = 1.dp,
+                                color = MaterialTheme.colors.onBackground,
+                                shape = MaterialTheme.shapes.medium
+                            )
+                            .clickable {
+                                galleryLauncher.launch("image/*")
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = stringResource(id = R.string.create_post_choose_image),
+                            tint = MaterialTheme.colors.onBackground
+                        )
+                    }
                 }
-            )
-            Spacer(modifier = Modifier.height(SpaceLarge))
-            Button(
-                onClick = {
-                    viewModel.onEvent(CreatePostContract.CreatePostEvent.Post)
-                },
-                modifier = Modifier.align(Alignment.End)
-            ) {
-                Text(
-                    text = stringResource(id = R.string.create_post),
-                    color = MaterialTheme.colors.onPrimary
+                Spacer(modifier = Modifier.height(SpaceMedium))
+                StandardTextField(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    text = postState.text,
+                    hint = stringResource(id = R.string.create_post_description),
+                    error = postState.error,
+                    singleLine = false,
+                    maxLines = 5,
+                    onValueChange = {
+                        viewModel.onEvent(CreatePostContract.CreatePostEvent.EnteredDescription(it))
+                    }
                 )
-                Spacer(modifier = Modifier.width(SpaceSmall))
-                Icon(imageVector = Icons.Default.Send, contentDescription = null)
+                Spacer(modifier = Modifier.height(SpaceLarge))
+                Button(
+                    onClick = {
+                        viewModel.onEvent(CreatePostContract.CreatePostEvent.Post)
+                    },
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.create_post),
+                        color = MaterialTheme.colors.onPrimary
+                    )
+                    Spacer(modifier = Modifier.width(SpaceSmall))
+                    Icon(imageVector = Icons.Default.Send, contentDescription = null)
+                }
             }
         }
     }

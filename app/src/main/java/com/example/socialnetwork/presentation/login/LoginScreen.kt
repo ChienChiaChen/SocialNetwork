@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -51,7 +52,9 @@ fun LoginScreen(
             when (it) {
                 is LoginContract.LoginEffect.HasUser -> {
                     if (it.value) {
-                        navController.navigate(Screen.MainFeedScreen.route)
+                        navController.navigate(Screen.MainFeedScreen.route) {
+                            popUpTo(Screen.LoginScreen.route) { inclusive = true }
+                        }
                         firstDraw++
                     }
 
@@ -63,106 +66,116 @@ fun LoginScreen(
         }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(
-                start = SpaceLarge,
-                end = SpaceLarge,
-                top = SpaceLarge,
-                bottom = 50.dp
+    if (state.isLoading) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            CircularProgressIndicator(
+                color = MaterialTheme.colors.onBackground
             )
-    ) {
-        Column(
-            verticalArrangement = Arrangement.Center,
+        }
+    } else {
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .align(Alignment.Center),
+                .padding(
+                    start = SpaceLarge,
+                    end = SpaceLarge,
+                    top = SpaceLarge,
+                    bottom = 50.dp
+                )
         ) {
-            Text(
-                text = stringResource(id = R.string.login_page_login),
-                style = MaterialTheme.typography.h1
-            )
-            Spacer(modifier = Modifier.height(SpaceMedium))
-            StandardTextField(
-                text = state.emailText,
-                onValueChange = {
-                    viewModel.onEvent(LoginContract.LoginEvent.EnteredEmail(it))
-                },
-                keyboardType = KeyboardType.Email,
-                error = when (state.emailError) {
-                    LoginState.EmailError.FieldEmpty -> stringResource(id = R.string.login_page_invalid_empty)
-                    LoginState.EmailError.Invalid -> stringResource(id = R.string.login_page_invalid_empty)
-                    null -> ""
-                },
-                hint = stringResource(id = R.string.login_hint)
-            )
-            Spacer(modifier = Modifier.height(SpaceMedium))
-            StandardTextField(
-                text = state.passwordText,
-                onValueChange = {
-                    viewModel.onEvent(LoginContract.LoginEvent.EnteredPassword(it))
-                },
-                hint = stringResource(id = R.string.login_page_password_hint),
-                keyboardType = KeyboardType.Password,
-                error = when (state.passwordError) {
-                    LoginState.PasswordError.FieldEmpty -> {
-                        stringResource(id = R.string.register_page_invalid_empty)
-                    }
-
-                    LoginState.PasswordError.InputTooShort -> {
-                        stringResource(
-                            id = R.string.register_page_invalid_too_short,
-                            Constants.MIN_PASSWORD_LENGTH
-                        )
-                    }
-
-                    LoginState.PasswordError.Invalid -> {
-                        stringResource(id = R.string.register_page_invalid_password)
-                    }
-
-                    null -> ""
-                },
-                isPasswordVisible = state.isPasswordVisible,
-                onPasswordToggleClick = {
-                    viewModel.onEvent(LoginContract.LoginEvent.TogglePasswordVisibility)
-                }
-            )
-            Spacer(modifier = Modifier.height(SpaceMedium))
-            Button(
-                onClick = {
-                    viewModel.onEvent(LoginContract.LoginEvent.Login)
-                },
-                modifier = Modifier.align(Alignment.End)
+            Column(
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .align(Alignment.Center),
             ) {
                 Text(
                     text = stringResource(id = R.string.login_page_login),
-                    color = MaterialTheme.colors.onPrimary
+                    style = MaterialTheme.typography.h1
                 )
-            }
-        }
-        Text(
-            text = buildAnnotatedString {
-                append(stringResource(id = R.string.login_page_dont_have_an_account_yet))
-                append(" ")
-                val signUpText = stringResource(id = R.string.login_page_sign_up)
-                withStyle(
-                    style = SpanStyle(
-                        color = MaterialTheme.colors.primary
-                    )
-                ) {
-                    append(signUpText)
-                }
-            },
-            style = MaterialTheme.typography.body1,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .clickable {
-                    navController.navigate(
-                        Screen.RegisterScreen.route
-                    )
-                }
-        )
-    }
+                Spacer(modifier = Modifier.height(SpaceMedium))
+                StandardTextField(
+                    text = state.emailText,
+                    onValueChange = {
+                        viewModel.onEvent(LoginContract.LoginEvent.EnteredEmail(it))
+                    },
+                    keyboardType = KeyboardType.Email,
+                    error = when (state.emailError) {
+                        LoginState.EmailError.FieldEmpty -> stringResource(id = R.string.login_page_invalid_empty)
+                        LoginState.EmailError.Invalid -> stringResource(id = R.string.login_page_invalid_empty)
+                        null -> ""
+                    },
+                    hint = stringResource(id = R.string.login_hint)
+                )
+                Spacer(modifier = Modifier.height(SpaceMedium))
+                StandardTextField(
+                    text = state.passwordText,
+                    onValueChange = {
+                        viewModel.onEvent(LoginContract.LoginEvent.EnteredPassword(it))
+                    },
+                    hint = stringResource(id = R.string.login_page_password_hint),
+                    keyboardType = KeyboardType.Password,
+                    error = when (state.passwordError) {
+                        LoginState.PasswordError.FieldEmpty -> {
+                            stringResource(id = R.string.register_page_invalid_empty)
+                        }
 
+                        LoginState.PasswordError.InputTooShort -> {
+                            stringResource(
+                                id = R.string.register_page_invalid_too_short,
+                                Constants.MIN_PASSWORD_LENGTH
+                            )
+                        }
+
+                        LoginState.PasswordError.Invalid -> {
+                            stringResource(id = R.string.register_page_invalid_password)
+                        }
+
+                        null -> ""
+                    },
+                    isPasswordVisible = state.isPasswordVisible,
+                    onPasswordToggleClick = {
+                        viewModel.onEvent(LoginContract.LoginEvent.TogglePasswordVisibility)
+                    }
+                )
+                Spacer(modifier = Modifier.height(SpaceMedium))
+                Button(
+                    onClick = {
+                        viewModel.onEvent(LoginContract.LoginEvent.Login)
+                    },
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.login_page_login),
+                        color = MaterialTheme.colors.onPrimary
+                    )
+                }
+            }
+            Text(
+                text = buildAnnotatedString {
+                    append(stringResource(id = R.string.login_page_dont_have_an_account_yet))
+                    append(" ")
+                    val signUpText = stringResource(id = R.string.login_page_sign_up)
+                    withStyle(
+                        style = SpanStyle(
+                            color = MaterialTheme.colors.primary
+                        )
+                    ) {
+                        append(signUpText)
+                    }
+                },
+                style = MaterialTheme.typography.body1,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .clickable {
+                        navController.navigate(
+                            Screen.RegisterScreen.route
+                        )
+                    }
+            )
+        }
+    }
 }

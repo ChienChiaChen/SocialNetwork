@@ -1,7 +1,5 @@
 package com.example.socialnetwork.presentation.profile
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.socialnetwork.common.wrapper.DataResult
@@ -53,8 +51,8 @@ class ProfileViewModel @Inject constructor(
             }
 
             is ProfileContract.ProfileEvent.RefreshPost -> {
+                _profileState.value = _profileState.value.copy(isLoading = true)
                 viewModelScope.launch {
-
                     when (val profileResult = fetchCurrentUserPostUseCase.invoke()) {
                         is DataResult.Success<List<Post>> -> {
                             _profileState.value =
@@ -67,6 +65,7 @@ class ProfileViewModel @Inject constructor(
 
                         null -> return@launch
                     }
+                    _profileState.value = _profileState.value.copy(isLoading = false)
                 }
             }
 

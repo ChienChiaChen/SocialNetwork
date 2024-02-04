@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,7 +40,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import com.example.socialnetwork.R
 import com.example.socialnetwork.common.components.BannerSection
 import com.example.socialnetwork.common.components.PostUi
@@ -112,33 +113,45 @@ fun ProfileScreen(
             .fillMaxSize()
             .nestedScroll(nestedScrollConnection)
     ) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(0.dp, 0.dp, 0.dp, 65.dp),
-            state = lazyListState
-        ) {
-            item {
-                Spacer(
-                    modifier = Modifier.height(
-                        toolbarHeightExpanded - profilePictureSize / 2f
+        if (userState.isLoading) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                CircularProgressIndicator(
+                    color = MaterialTheme.colors.onBackground
+                )
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(0.dp, 0.dp, 0.dp, 65.dp),
+                state = lazyListState
+            ) {
+
+                item {
+                    Spacer(
+                        modifier = Modifier.height(
+                            toolbarHeightExpanded - profilePictureSize / 2f
+                        )
                     )
-                )
-            }
-            item {
-                ProfileHeaderSection(
-                    user = userState.user
-                )
-            }
-            items(userState.post) { post ->
-                Spacer(
-                    modifier = Modifier
-                        .height(SpaceMedium)
-                )
-                PostUi(
-                    post = post,
-                    showProfileImage = false
-                )
+                }
+                item {
+                    ProfileHeaderSection(
+                        user = userState.user
+                    )
+                }
+                items(userState.post) { post ->
+                    Spacer(
+                        modifier = Modifier
+                            .height(SpaceMedium)
+                    )
+                    PostUi(
+                        post = post,
+                        showProfileImage = false
+                    )
+                }
             }
         }
         Column(
@@ -152,8 +165,8 @@ fun ProfileScreen(
                     )
                 )
             )
-            AsyncImage(
-                model = userState.user.profilePictureUrl,
+            SubcomposeAsyncImage(
+                model = userState.user.profilePictureUrl.ifBlank { R.drawable.eva_avatar },
                 contentDescription = stringResource(id = R.string.profile_page_image),
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
@@ -176,7 +189,13 @@ fun ProfileScreen(
                         shape = CircleShape
                     )
                     .clickable { galleryLauncher.launch("image/*") },
+                loading = {
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colors.onBackground
+                    )
+                }
             )
+
         }
     }
 

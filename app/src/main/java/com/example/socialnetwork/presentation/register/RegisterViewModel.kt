@@ -45,6 +45,7 @@ class RegisterViewModel @Inject constructor(
                     _state.value.copy(isPasswordVisible = !state.value.isPasswordVisible)
 
             is RegisterContract.RegisterEvent.Register -> {
+                _state.value = _state.value.copy(isLoading = true)
                 viewModelScope.launch {
                     val tempState = state.value
                     val signUpResult = registerUseCase.invoke(
@@ -60,7 +61,6 @@ class RegisterViewModel @Inject constructor(
                         passwordError = signUpResult.passwordError?.toPasswordErrorState(),
                         confirmPasswordError = signUpResult.confirmPasswordError?.toConfirmPasswordErrorState()
                     )
-
                     when (signUpResult.result) {
                         is DataResult.Success<*> -> {
                             _effect.tryEmit(RegisterContract.RegisterEffect.NavigateTo)
@@ -72,6 +72,7 @@ class RegisterViewModel @Inject constructor(
 
                         null -> return@launch
                     }
+                    _state.value = _state.value.copy(isLoading = false)
                 }
             }
         }

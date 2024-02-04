@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.socialnetwork.common.wrapper.DataResult
 import com.example.socialnetwork.domain.Post
-import com.example.socialnetwork.domain.usecase.post.FetchCurrentUserPostUseCase
+import com.example.socialnetwork.domain.usecase.post.FetchAllPostUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainFeedViewModel @Inject constructor(
-    private val fetchCurrentUserPostUseCase: FetchCurrentUserPostUseCase,
+    private val fetchAllPostUseCase: FetchAllPostUseCase
 ) : ViewModel() {
 
     private val _mainFeedDataState = MutableStateFlow(MainFeedDataState())
@@ -22,8 +22,9 @@ class MainFeedViewModel @Inject constructor(
     fun onEvent(event: MainFeedContract.MainFeedEvent) {
         when (event) {
             is MainFeedContract.MainFeedEvent.RefreshPost -> {
+                _mainFeedDataState.value = _mainFeedDataState.value.copy(isLoading = true)
                 viewModelScope.launch {
-                    when (val profileResult = fetchCurrentUserPostUseCase.invoke()) {
+                    when (val profileResult = fetchAllPostUseCase.invoke()) {
                         is DataResult.Success<List<Post>> -> {
                             _mainFeedDataState.value =
                                 _mainFeedDataState.value.copy(post = profileResult.data)
@@ -36,6 +37,7 @@ class MainFeedViewModel @Inject constructor(
                         null -> return@launch
                     }
                 }
+                _mainFeedDataState.value = _mainFeedDataState.value.copy(isLoading = false)
             }
         }
 

@@ -30,8 +30,10 @@ class LoginViewModel @Inject constructor(
     fun onEvent(event: LoginContract.LoginEvent) {
         when (event) {
             is LoginContract.LoginEvent.HasUser -> {
+                _state.value = _state.value.copy(isLoading = true)
                 val hasUser = hasUserUseCase.invoke()
                 _effect.tryEmit(LoginContract.LoginEffect.HasUser(hasUser))
+                _state.value = _state.value.copy(isLoading = false)
             }
 
             is LoginContract.LoginEvent.EnteredEmail ->
@@ -45,6 +47,7 @@ class LoginViewModel @Inject constructor(
                     _state.value.copy(isPasswordVisible = !_state.value.isPasswordVisible)
 
             is LoginContract.LoginEvent.Login -> {
+                _state.value = _state.value.copy(isLoading = true)
                 viewModelScope.launch {
                     val tempState = state.value
                     val loginResult = loginUseCase(tempState.emailText, tempState.passwordText)
@@ -66,6 +69,7 @@ class LoginViewModel @Inject constructor(
                         null -> return@launch
                     }
                 }
+                _state.value = _state.value.copy(isLoading = false)
             }
         }
     }

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -46,166 +47,177 @@ fun RegisterScreen(
         }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(
-                start = SpaceLarge,
-                end = SpaceLarge,
-                top = SpaceLarge,
-                bottom = 50.dp
+    if (state.isLoading) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            CircularProgressIndicator(
+                color = MaterialTheme.colors.onBackground
             )
-    ) {
-        Column(
-            verticalArrangement = Arrangement.Center,
+        }
+    } else {
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .align(Alignment.Center),
+                .padding(
+                    start = SpaceLarge,
+                    end = SpaceLarge,
+                    top = SpaceLarge,
+                    bottom = 50.dp
+                )
         ) {
-            Text(
-                text = stringResource(id = R.string.register_page_register),
-                style = MaterialTheme.typography.h1
-            )
-            Spacer(modifier = Modifier.height(SpaceMedium))
-            StandardTextField(
-                text = state.emailText,
-                onValueChange = {
-                    viewModel.onEvent(RegisterContract.RegisterEvent.EnteredEmail(it))
-                },
-                error = when (state.emailError) {
-                    RegisterState.EmailError.FieldEmpty -> {
-                        stringResource(id = R.string.register_page_invalid_empty)
-                    }
-
-                    RegisterState.EmailError.Invalid -> {
-                        stringResource(id = R.string.register_page_invalid_email)
-                    }
-
-                    null -> ""
-                },
-                keyboardType = KeyboardType.Email,
-                hint = stringResource(id = R.string.register_page_email)
-            )
-            Spacer(modifier = Modifier.height(SpaceMedium))
-            StandardTextField(
-                text = state.usernameText,
-                onValueChange = {
-                    viewModel.onEvent(RegisterContract.RegisterEvent.EnteredUsername(it))
-                },
-                error = when (state.usernameError) {
-                    RegisterState.UsernameError.FieldEmpty -> {
-                        stringResource(id = R.string.register_page_invalid_empty)
-                    }
-
-                    RegisterState.UsernameError.InputTooShort -> {
-                        stringResource(
-                            id = R.string.register_page_invalid_too_short,
-                            Constants.MIN_USERNAME_LENGTH
-                        )
-                    }
-
-                    RegisterState.UsernameError.Invalid -> {
-                        stringResource(id = R.string.register_page_invalid,)
-                    }
-
-                    null -> ""
-                },
-                hint = stringResource(id = R.string.register_page_username)
-            )
-            Spacer(modifier = Modifier.height(SpaceMedium))
-            StandardTextField(
-                text = state.passwordText,
-                onValueChange = {
-                    viewModel.onEvent(RegisterContract.RegisterEvent.EnteredPassword(it))
-                },
-                hint = stringResource(id = R.string.register_page_password_hint),
-                keyboardType = KeyboardType.Password,
-                error = when (state.passwordError) {
-                    RegisterState.PasswordError.FieldEmpty -> {
-                        stringResource(id = R.string.register_page_invalid_empty)
-                    }
-
-                    RegisterState.PasswordError.InputTooShort -> {
-                        stringResource(
-                            id = R.string.register_page_invalid_too_short,
-                            Constants.MIN_PASSWORD_LENGTH
-                        )
-                    }
-
-                    RegisterState.PasswordError.Invalid -> {
-                        stringResource(id = R.string.register_page_invalid_password)
-                    }
-
-                    null -> ""
-                },
-                isPasswordVisible = state.isPasswordVisible,
-                onPasswordToggleClick = {
-                    viewModel.onEvent(RegisterContract.RegisterEvent.TogglePasswordVisibility)
-                }
-            )
-            Spacer(modifier = Modifier.height(SpaceMedium))
-            StandardTextField(
-                text = state.confirmPasswordText,
-                onValueChange = {
-                    viewModel.onEvent(RegisterContract.RegisterEvent.EnteredConfirmPassword(it))
-                },
-                hint = stringResource(id = R.string.register_page_confirmed_password_hint),
-                keyboardType = KeyboardType.Password,
-                error = when (state.confirmPasswordError) {
-                    RegisterState.ConfirmPasswordError.FieldEmpty -> {
-                        stringResource(id = R.string.register_page_invalid_empty)
-                    }
-
-                    RegisterState.ConfirmPasswordError.InputTooShort -> {
-                        stringResource(
-                            id = R.string.register_page_invalid_too_short,
-                            Constants.MIN_PASSWORD_LENGTH
-                        )
-                    }
-
-                    RegisterState.ConfirmPasswordError.Invalid,
-                    RegisterState.ConfirmPasswordError.NotMatch -> {
-                        stringResource(id = R.string.register_page_invalid_password)
-                    }
-
-                    null -> ""
-                },
-                isPasswordVisible = state.isPasswordVisible,
-                onPasswordToggleClick = {
-                    viewModel.onEvent(RegisterContract.RegisterEvent.TogglePasswordVisibility)
-                }
-            )
-            Spacer(modifier = Modifier.height(SpaceMedium))
-            Button(
-                onClick = {
-                    viewModel.onEvent(RegisterContract.RegisterEvent.Register)
-                },
+            Column(
+                verticalArrangement = Arrangement.Center,
                 modifier = Modifier
-                    .align(Alignment.End)
+                    .fillMaxSize()
+                    .align(Alignment.Center),
             ) {
                 Text(
                     text = stringResource(id = R.string.register_page_register),
-                    color = MaterialTheme.colors.onPrimary
+                    style = MaterialTheme.typography.h1
                 )
-            }
-        }
-        Text(
-            text = buildAnnotatedString {
-                append(stringResource(id = R.string.register_page_already_have_an_account))
-                append(" ")
-                val signUpText = stringResource(id = R.string.register_page_sign_in)
-                withStyle(
-                    style = SpanStyle(color = MaterialTheme.colors.primary)
+                Spacer(modifier = Modifier.height(SpaceMedium))
+                StandardTextField(
+                    text = state.emailText,
+                    onValueChange = {
+                        viewModel.onEvent(RegisterContract.RegisterEvent.EnteredEmail(it))
+                    },
+                    error = when (state.emailError) {
+                        RegisterState.EmailError.FieldEmpty -> {
+                            stringResource(id = R.string.register_page_invalid_empty)
+                        }
+
+                        RegisterState.EmailError.Invalid -> {
+                            stringResource(id = R.string.register_page_invalid_email)
+                        }
+
+                        null -> ""
+                    },
+                    keyboardType = KeyboardType.Email,
+                    hint = stringResource(id = R.string.register_page_email)
+                )
+                Spacer(modifier = Modifier.height(SpaceMedium))
+                StandardTextField(
+                    text = state.usernameText,
+                    onValueChange = {
+                        viewModel.onEvent(RegisterContract.RegisterEvent.EnteredUsername(it))
+                    },
+                    error = when (state.usernameError) {
+                        RegisterState.UsernameError.FieldEmpty -> {
+                            stringResource(id = R.string.register_page_invalid_empty)
+                        }
+
+                        RegisterState.UsernameError.InputTooShort -> {
+                            stringResource(
+                                id = R.string.register_page_invalid_too_short,
+                                Constants.MIN_USERNAME_LENGTH
+                            )
+                        }
+
+                        RegisterState.UsernameError.Invalid -> {
+                            stringResource(id = R.string.register_page_invalid)
+                        }
+
+                        null -> ""
+                    },
+                    hint = stringResource(id = R.string.register_page_username)
+                )
+                Spacer(modifier = Modifier.height(SpaceMedium))
+                StandardTextField(
+                    text = state.passwordText,
+                    onValueChange = {
+                        viewModel.onEvent(RegisterContract.RegisterEvent.EnteredPassword(it))
+                    },
+                    hint = stringResource(id = R.string.register_page_password_hint),
+                    keyboardType = KeyboardType.Password,
+                    error = when (state.passwordError) {
+                        RegisterState.PasswordError.FieldEmpty -> {
+                            stringResource(id = R.string.register_page_invalid_empty)
+                        }
+
+                        RegisterState.PasswordError.InputTooShort -> {
+                            stringResource(
+                                id = R.string.register_page_invalid_too_short,
+                                Constants.MIN_PASSWORD_LENGTH
+                            )
+                        }
+
+                        RegisterState.PasswordError.Invalid -> {
+                            stringResource(id = R.string.register_page_invalid_password)
+                        }
+
+                        null -> ""
+                    },
+                    isPasswordVisible = state.isPasswordVisible,
+                    onPasswordToggleClick = {
+                        viewModel.onEvent(RegisterContract.RegisterEvent.TogglePasswordVisibility)
+                    }
+                )
+                Spacer(modifier = Modifier.height(SpaceMedium))
+                StandardTextField(
+                    text = state.confirmPasswordText,
+                    onValueChange = {
+                        viewModel.onEvent(RegisterContract.RegisterEvent.EnteredConfirmPassword(it))
+                    },
+                    hint = stringResource(id = R.string.register_page_confirmed_password_hint),
+                    keyboardType = KeyboardType.Password,
+                    error = when (state.confirmPasswordError) {
+                        RegisterState.ConfirmPasswordError.FieldEmpty -> {
+                            stringResource(id = R.string.register_page_invalid_empty)
+                        }
+
+                        RegisterState.ConfirmPasswordError.InputTooShort -> {
+                            stringResource(
+                                id = R.string.register_page_invalid_too_short,
+                                Constants.MIN_PASSWORD_LENGTH
+                            )
+                        }
+
+                        RegisterState.ConfirmPasswordError.Invalid,
+                        RegisterState.ConfirmPasswordError.NotMatch -> {
+                            stringResource(id = R.string.register_page_invalid_password)
+                        }
+
+                        null -> ""
+                    },
+                    isPasswordVisible = state.isPasswordVisible,
+                    onPasswordToggleClick = {
+                        viewModel.onEvent(RegisterContract.RegisterEvent.TogglePasswordVisibility)
+                    }
+                )
+                Spacer(modifier = Modifier.height(SpaceMedium))
+                Button(
+                    onClick = {
+                        viewModel.onEvent(RegisterContract.RegisterEvent.Register)
+                    },
+                    modifier = Modifier
+                        .align(Alignment.End)
                 ) {
-                    append(signUpText)
+                    Text(
+                        text = stringResource(id = R.string.register_page_register),
+                        color = MaterialTheme.colors.onPrimary
+                    )
                 }
-            },
-            style = MaterialTheme.typography.body1,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .clickable {
-                    navController.popBackStack()
-                }
-        )
+            }
+            Text(
+                text = buildAnnotatedString {
+                    append(stringResource(id = R.string.register_page_already_have_an_account))
+                    append(" ")
+                    val signUpText = stringResource(id = R.string.register_page_sign_in)
+                    withStyle(
+                        style = SpanStyle(color = MaterialTheme.colors.primary)
+                    ) {
+                        append(signUpText)
+                    }
+                },
+                style = MaterialTheme.typography.body1,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .clickable {
+                        navController.popBackStack()
+                    }
+            )
+        }
     }
 }

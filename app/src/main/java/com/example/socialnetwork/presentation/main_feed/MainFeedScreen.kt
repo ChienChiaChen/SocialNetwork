@@ -1,5 +1,6 @@
 package com.example.socialnetwork.presentation.main_feed
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,12 +10,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
@@ -47,7 +50,7 @@ fun MainFeedScreen(
 
     val lazyListState = rememberLazyListState()
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         StandardToolbar(
             navController = navController,
@@ -61,20 +64,30 @@ fun MainFeedScreen(
             modifier = Modifier.fillMaxWidth(),
             showBackArrow = false,
         )
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(0.dp, 0.dp, 0.dp, 65.dp),
-            state = lazyListState
-        ) {
-            items(postState.post) { post ->
-                Spacer(
-                    modifier = Modifier
-                        .height(SpaceMedium)
+        if (postState.isLoading) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                CircularProgressIndicator(
+                    color = MaterialTheme.colors.onBackground
                 )
-                PostUi(post)
             }
-
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(0.dp, 0.dp, 0.dp, 65.dp),
+                state = lazyListState
+            ) {
+                items(postState.post) { post ->
+                    Spacer(
+                        modifier = Modifier
+                            .height(SpaceMedium)
+                    )
+                    PostUi(post)
+                }
+            }
         }
     }
 }
