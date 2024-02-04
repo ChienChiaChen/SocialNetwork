@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.socialnetwork.common.SingleSharedFlow
 import com.example.socialnetwork.common.error.toLoginEmailErrorState
 import com.example.socialnetwork.common.error.toLoginPasswordErrorState
+import com.example.socialnetwork.common.exception.getStringResId
 import com.example.socialnetwork.common.wrapper.DataResult
 import com.example.socialnetwork.domain.usecase.auth.login.HasUserUseCase
 import com.example.socialnetwork.domain.usecase.auth.login.LoginUseCase
@@ -54,16 +55,17 @@ class LoginViewModel @Inject constructor(
 
                     _state.value = _state.value.copy(
                         emailError = loginResult.emailError?.toLoginEmailErrorState(),
-                        passwordError = loginResult.emailError?.toLoginPasswordErrorState()
+                        passwordError = loginResult.passwordError?.toLoginPasswordErrorState()
                     )
 
-                    when (loginResult.result) {
+                    when (val result = loginResult.result) {
                         is DataResult.Success<*> -> {
                             _effect.tryEmit(LoginContract.LoginEffect.NavigateTo)
                         }
 
                         is DataResult.Error<*> -> {
-                            // send Error msg
+                            _state.value =
+                                _state.value.copy(errorMsg = result.exception.getStringResId())
                         }
 
                         null -> return@launch

@@ -60,6 +60,7 @@ fun AuthError?.toLoginPasswordErrorState(): LoginState.PasswordError? {
     return when (this) {
         AuthError.EmptyField -> LoginState.PasswordError.FieldEmpty
         AuthError.InputTooShort -> LoginState.PasswordError.InputTooShort
+        AuthError.InvalidPassword -> LoginState.PasswordError.Invalid
         null -> null
         else -> LoginState.PasswordError.Invalid
     }

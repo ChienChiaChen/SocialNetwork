@@ -26,7 +26,8 @@ object AuthValidator {
     fun passwordError(password: String): AuthError? {
         return when {
             password.isEmpty() -> AuthError.EmptyField
-            !isValidPassword(password) -> AuthError.InvalidPassword
+            !isValidPassword(password) -> AuthError.InputTooShort
+            password.any { it.isUpperCase() } -> AuthError.InvalidPassword
             else -> null
         }
     }
