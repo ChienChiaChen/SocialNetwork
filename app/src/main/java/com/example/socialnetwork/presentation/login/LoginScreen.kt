@@ -105,7 +105,7 @@ fun LoginScreen(
                     keyboardType = KeyboardType.Email,
                     error = when (state.emailError) {
                         LoginState.EmailError.FieldEmpty -> stringResource(id = R.string.login_page_invalid_empty)
-                        LoginState.EmailError.Invalid -> stringResource(id = R.string.login_page_invalid_empty)
+                        LoginState.EmailError.Invalid -> stringResource(id = R.string.login_page_invalid_email)
                         null -> ""
                     },
                     hint = stringResource(id = R.string.login_hint)

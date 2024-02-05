@@ -91,5 +91,3 @@ fun MainFeedScreen(
         }
     }
 }
-// TODO: unit test.
-// delete post
