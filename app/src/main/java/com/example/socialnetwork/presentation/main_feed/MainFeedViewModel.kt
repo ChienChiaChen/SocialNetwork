@@ -23,7 +23,7 @@ class MainFeedViewModel @Inject constructor(
     fun onEvent(event: MainFeedContract.MainFeedEvent) {
         when (event) {
             is MainFeedContract.MainFeedEvent.RefreshPost -> {
-                _mainFeedDataState.value = _mainFeedDataState.value.copy(isLoading = true)
+                _mainFeedDataState.value = _mainFeedDataState.value.copy(refreshing = true)
                 viewModelScope.launch {
                     when (val profileResult = fetchAllPostUseCase.invoke()) {
                         is DataResult.Success<List<Post>> -> {
@@ -39,8 +39,8 @@ class MainFeedViewModel @Inject constructor(
 
                         null -> return@launch
                     }
+                    _mainFeedDataState.value = _mainFeedDataState.value.copy(refreshing = false)
                 }
-                _mainFeedDataState.value = _mainFeedDataState.value.copy(isLoading = false)
             }
         }
 

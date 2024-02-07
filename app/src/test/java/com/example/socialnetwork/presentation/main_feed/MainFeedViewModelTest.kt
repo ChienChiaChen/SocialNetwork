@@ -54,9 +54,9 @@ class MainFeedViewModelTest {
             viewModel.onEvent(MainFeedContract.MainFeedEvent.RefreshPost)
 
             viewModel.mainFeedDataState.test {
-                val actual1 = awaitItem()
-                Assert.assertEquals(fakePost, actual1.post)
-                Assert.assertEquals(false, actual1.isLoading)
+                val actual = awaitItem()
+                Assert.assertEquals(fakePost, actual.post)
+                Assert.assertEquals(false, actual.refreshing)
                 expectNoEvents()
             }
         }

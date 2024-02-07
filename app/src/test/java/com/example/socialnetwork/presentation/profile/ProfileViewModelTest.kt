@@ -61,9 +61,9 @@ class ProfileViewModelTest {
             viewModel.onEvent(ProfileContract.ProfileEvent.EnteredImageUri(""))
 
             viewModel.profileState.test {
-                val actual1 = awaitItem()
-                Assert.assertEquals(fakeUser.username, actual1.user.username)
-                Assert.assertEquals(false, actual1.isLoading)
+                val actual = awaitItem()
+                Assert.assertEquals(fakeUser.username, actual.user.username)
+                Assert.assertEquals(false, actual.isLoading)
                 expectNoEvents()
             }
         }
@@ -105,9 +105,9 @@ class ProfileViewModelTest {
             viewModel.onEvent(ProfileContract.ProfileEvent.RefreshPost)
 
             viewModel.profileState.test {
-                val actual1 = awaitItem()
-                Assert.assertEquals(fakePost, actual1.post)
-                Assert.assertEquals(false, actual1.isLoading)
+                val actual = awaitItem()
+                Assert.assertEquals(fakePost, actual.post)
+                Assert.assertEquals(false, actual.isLoading)
                 expectNoEvents()
             }
         }

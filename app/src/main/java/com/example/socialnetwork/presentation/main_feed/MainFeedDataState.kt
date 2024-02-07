@@ -4,6 +4,6 @@ import com.example.socialnetwork.domain.Post
 
 data class MainFeedDataState(
     val post: List<Post> = emptyList(),
-    val isLoading: Boolean = true,
+    val refreshing: Boolean = false,
     val errorMsg: Int = 0
 )
