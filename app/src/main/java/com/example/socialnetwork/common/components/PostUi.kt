@@ -68,14 +68,29 @@ fun PostUi(
                     .fillMaxWidth()
                     .padding(SpaceMedium)
             ) {
-                ActionRow(
-                    username = post.username,
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth(),
-                    onUsernameClick = { username ->
-
-                    }
-                )
-                Spacer(modifier = Modifier.height(SpaceMedium))
+                ) {
+                    Text(
+                        text = post.username,
+                        style = TextStyle(
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colors.primary
+                        ),
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable {}
+                    )
+                    if (post.description.isBlank())
+                        Text(
+                            text = DateUtils.format(post.createdAt),
+                            style = MaterialTheme.typography.body2,
+                            modifier = Modifier
+                        )
+                }
+                if (post.description.isNotBlank())
+                    Spacer(modifier = Modifier.height(SpaceMedium))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -84,14 +99,14 @@ fun PostUi(
                         text = post.description,
                         style = MaterialTheme.typography.body2,
                         overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1f,true)
+                        modifier = Modifier.weight(1f)
                     )
-
-                    Text(
-                        text = DateUtils.format(post.createdAt),
-                        style = MaterialTheme.typography.body2,
-                        modifier = Modifier
-                    )
+                    if (post.description.isNotBlank())
+                        Text(
+                            text = DateUtils.format(post.createdAt),
+                            style = MaterialTheme.typography.body2,
+                            modifier = Modifier
+                        )
                 }
 
 
@@ -112,30 +127,5 @@ fun PostUi(
                 }
             )
         }
-    }
-}
-
-@Composable
-fun ActionRow(
-    modifier: Modifier = Modifier,
-    username: String,
-    onUsernameClick: (String) -> Unit = {}
-) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier,
-    ) {
-        Text(
-            text = username,
-            style = TextStyle(
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colors.primary
-            ),
-            modifier = Modifier
-                .clickable {
-                    onUsernameClick(username)
-                }
-        )
     }
 }

@@ -5,7 +5,7 @@ import java.util.Date
 
 object DateUtils {
     private val simpleDateFormat =
-        SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+        SimpleDateFormat("MMM dd, HH:mm")
 
     fun format(date: Date):String {
         return simpleDateFormat.format(date)
