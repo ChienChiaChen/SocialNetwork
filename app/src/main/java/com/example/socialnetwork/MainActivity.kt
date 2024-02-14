@@ -28,23 +28,22 @@ class MainActivity : ComponentActivity() {
         setContent {
             SocialNetworkTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
+                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
+
+                    val appState = rememberAppState()
+
                     val navController = rememberNavController()
                     val navBackStackEntry by navController.currentBackStackEntryAsState()
 
                     StandardScaffold(
+                        scaffoldState = appState.scaffoldState,
                         navController = navController,
                         showBottomBar = navBackStackEntry?.destination?.route in listOf(
                             Screen.MainFeedScreen.route,
                             Screen.ProfileScreen.route,
                         ),
                         modifier = Modifier.fillMaxSize(),
-                        onFabClick = {
-                            navController.navigate(Screen.CreatePostScreen.route)
-                        }
+                        onFabClick = { navController.navigate(Screen.CreatePostScreen.route) }
                     ) {
                         Navigation(navController)
                     }

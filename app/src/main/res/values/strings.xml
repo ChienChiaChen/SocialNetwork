@@ -39,7 +39,7 @@
     <string name="create_post">Post</string>
 
     <string name="error_network_unavailable_message">Please check your internet connection and try again.</string>
-    <string name="error_unknown_network_error_message">Something unexpected happened, please try again later…</string>
+    <string name="error_unknown_network_error_message">Something unexpected happened, please try again…</string>
     <string name="error_not_found_data_message">Not found data.</string>
     <string name="error_invalid_credentials_message">Invalid credentials️.</string>
 

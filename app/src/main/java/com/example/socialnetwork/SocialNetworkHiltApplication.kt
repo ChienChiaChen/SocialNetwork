@@ -4,4 +4,4 @@ import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
-class SocialNetworkApplication : Application()
+class SocialNetworkHiltApplication : Application()

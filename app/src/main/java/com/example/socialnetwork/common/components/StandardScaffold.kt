@@ -2,6 +2,7 @@ package com.example.socialnetwork.common.components
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -19,6 +20,7 @@ import com.example.socialnetwork.common.Screen
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun StandardScaffold(
+    scaffoldState: ScaffoldState,
     navController: NavController,
     modifier: Modifier = Modifier,
     showBottomBar: Boolean = true,
@@ -82,7 +84,17 @@ fun StandardScaffold(
         },
         isFloatingActionButtonDocked = true,
         floatingActionButtonPosition = FabPosition.Center,
-        modifier = modifier
+        modifier = modifier,
+        snackbarHost = {
+            SnackbarHost(
+                hostState = it,
+                modifier = Modifier.padding(8.dp),
+                snackbar = { snackbarData ->
+                    Snackbar(snackbarData, contentColor = MaterialTheme.colors.onPrimary)
+                }
+            )
+        },
+        scaffoldState = scaffoldState
     ) {
         content()
     }
