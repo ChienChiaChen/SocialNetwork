@@ -5,5 +5,4 @@ import com.example.socialnetwork.domain.Post
 data class MainFeedDataState(
     val post: List<Post> = emptyList(),
     val refreshing: Boolean = false,
-    val errorMsg: Int = 0
 )

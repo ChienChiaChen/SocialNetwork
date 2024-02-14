@@ -57,9 +57,7 @@ fun LoginScreen(
                         }
                         firstDraw++
                     }
-
                 }
-
                 LoginContract.LoginEffect.NavigateTo -> navController.navigate(Screen.MainFeedScreen.route)
             }
 

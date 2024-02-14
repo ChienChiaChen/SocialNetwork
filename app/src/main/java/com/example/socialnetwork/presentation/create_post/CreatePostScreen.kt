@@ -134,7 +134,6 @@ fun CreatePostScreen(
                         .fillMaxWidth(),
                     text = postState.text,
                     hint = stringResource(id = R.string.create_post_description),
-                    error = if (postState.error == 0) "" else stringResource(postState.error),
                     singleLine = false,
                     maxLines = 5,
                     onValueChange = {

@@ -14,6 +14,5 @@ class LoginContract {
     sealed class LoginEffect {
         object NavigateTo : LoginEffect()
         data class HasUser(val value: Boolean) : LoginEffect()
-
     }
 }

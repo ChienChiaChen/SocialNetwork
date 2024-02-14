@@ -7,7 +7,8 @@ import com.example.socialnetwork.common.error.toConfirmPasswordErrorState
 import com.example.socialnetwork.common.error.toEmailErrorState
 import com.example.socialnetwork.common.error.toPasswordErrorState
 import com.example.socialnetwork.common.error.toUserNameErrorState
-import com.example.socialnetwork.common.exception.getStringResId
+import com.example.socialnetwork.common.snackbar.SnackbarManager
+import com.example.socialnetwork.common.snackbar.SnackbarMessage.Companion.toSnackbarMessage
 import com.example.socialnetwork.common.wrapper.DataResult
 import com.example.socialnetwork.domain.usecase.auth.register.RegisterUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -68,10 +69,8 @@ class RegisterViewModel @Inject constructor(
                             _effect.tryEmit(RegisterContract.RegisterEffect.NavigateTo)
                         }
 
-                        is DataResult.Error<*> -> {
-                            _state.value =
-                                _state.value.copy(errorMsg = result.exception.getStringResId())
-                        }
+                        is DataResult.Error<*> ->
+                            SnackbarManager.showMessage(result.exception.toSnackbarMessage())
 
                         null -> return@launch
                     }

@@ -5,7 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.socialnetwork.common.SingleSharedFlow
 import com.example.socialnetwork.common.error.toLoginEmailErrorState
 import com.example.socialnetwork.common.error.toLoginPasswordErrorState
-import com.example.socialnetwork.common.exception.getStringResId
+import com.example.socialnetwork.common.snackbar.SnackbarManager
+import com.example.socialnetwork.common.snackbar.SnackbarMessage.Companion.toSnackbarMessage
 import com.example.socialnetwork.common.wrapper.DataResult
 import com.example.socialnetwork.domain.usecase.auth.login.HasUserUseCase
 import com.example.socialnetwork.domain.usecase.auth.login.LoginUseCase
@@ -53,6 +54,7 @@ class LoginViewModel @Inject constructor(
                     val tempState = state.value
                     val loginResult = loginUseCase(tempState.emailText, tempState.passwordText)
 
+                    // show error to edit text.
                     _state.value = _state.value.copy(
                         emailError = loginResult.emailError?.toLoginEmailErrorState(),
                         passwordError = loginResult.passwordError?.toLoginPasswordErrorState()
@@ -63,11 +65,7 @@ class LoginViewModel @Inject constructor(
                             _effect.tryEmit(LoginContract.LoginEffect.NavigateTo)
                         }
 
-                        is DataResult.Error<*> -> {
-                            _state.value =
-                                _state.value.copy(errorMsg = result.exception.getStringResId())
-                        }
-
+                        is DataResult.Error<*> -> SnackbarManager.showMessage(result.exception.toSnackbarMessage())
                         null -> return@launch
                     }
                 }

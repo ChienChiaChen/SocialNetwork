@@ -8,6 +8,8 @@ fun Throwable.getStringResId(): Int {
         is NetworkException.NotFound -> R.string.error_not_found_data_message
         is NetworkException.BadRequest -> R.string.error_unknown_network_error_message
         is NetworkException.NotAuthorized -> R.string.error_invalid_credentials_message
-        else -> R.string.error_unknown_network_error_message
+        else -> UNREAD_ERROR_CODE
     }
 }
+
+const val UNREAD_ERROR_CODE = 0

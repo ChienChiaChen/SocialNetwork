@@ -11,7 +11,6 @@ data class RegisterState(
     val confirmPasswordError: ConfirmPasswordError? = null,
     val isPasswordVisible: Boolean = false,
     val isLoading: Boolean = false,
-    val errorMsg: Int = 0
 ) {
     sealed class UsernameError {
         object FieldEmpty : UsernameError()

@@ -2,7 +2,8 @@ package com.example.socialnetwork.presentation.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.socialnetwork.common.exception.getStringResId
+import com.example.socialnetwork.common.snackbar.SnackbarManager
+import com.example.socialnetwork.common.snackbar.SnackbarMessage.Companion.toSnackbarMessage
 import com.example.socialnetwork.common.wrapper.DataResult
 import com.example.socialnetwork.domain.Post
 import com.example.socialnetwork.domain.usecase.auth.user.FetchCurrentUserCase
@@ -47,8 +48,7 @@ class ProfileViewModel @Inject constructor(
                                 _profileState.value.copy(user = userInfo.data)
                         }
 
-                        is DataResult.Error -> _profileState.value =
-                            _profileState.value.copy(errorMsg = userInfo.exception.getStringResId())
+                        is DataResult.Error<*> -> SnackbarManager.showMessage(userInfo.exception.toSnackbarMessage())
                     }
                     _profileState.value = _profileState.value.copy(isUserInfoLoading = false)
                 }
@@ -64,8 +64,7 @@ class ProfileViewModel @Inject constructor(
                         }
 
                         is DataResult.Error -> {
-                            _profileState.value =
-                                _profileState.value.copy(errorMsg = profileResult.exception.getStringResId())
+                            SnackbarManager.showMessage(profileResult.exception.toSnackbarMessage())
                         }
 
                         null -> return@launch
@@ -82,10 +81,7 @@ class ProfileViewModel @Inject constructor(
                                 _profileState.value.copy(user = userInfo.data)
                         }
 
-                        is DataResult.Error -> {
-                            _profileState.value =
-                                _profileState.value.copy(errorMsg = userInfo.exception.getStringResId())
-                        }
+                        is DataResult.Error -> SnackbarManager.showMessage(userInfo.exception.toSnackbarMessage())
                     }
                 }
             }

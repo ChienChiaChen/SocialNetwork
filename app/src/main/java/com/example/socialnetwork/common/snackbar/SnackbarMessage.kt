@@ -19,6 +19,8 @@ package com.example.socialnetwork.common.snackbar
 import android.content.res.Resources
 import androidx.annotation.StringRes
 import com.example.socialnetwork.R
+import com.example.socialnetwork.common.exception.UNREAD_ERROR_CODE
+import com.example.socialnetwork.common.exception.getStringResId
 
 sealed class SnackbarMessage {
     class StringSnackbar(val message: String) : SnackbarMessage()
@@ -34,7 +36,9 @@ sealed class SnackbarMessage {
 
         fun Throwable.toSnackbarMessage(): SnackbarMessage {
             val message = this.message.orEmpty()
+
             return if (message.isNotBlank()) StringSnackbar(message)
+            else if (getStringResId() != UNREAD_ERROR_CODE) ResourceSnackbar(getStringResId())
             else ResourceSnackbar(R.string.error_unknown_network_error_message)
         }
     }

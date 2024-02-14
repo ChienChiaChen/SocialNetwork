@@ -2,7 +2,8 @@ package com.example.socialnetwork.presentation.main_feed
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.socialnetwork.common.exception.getStringResId
+import com.example.socialnetwork.common.snackbar.SnackbarManager
+import com.example.socialnetwork.common.snackbar.SnackbarMessage.Companion.toSnackbarMessage
 import com.example.socialnetwork.common.wrapper.DataResult
 import com.example.socialnetwork.domain.Post
 import com.example.socialnetwork.domain.usecase.post.FetchAllPostUseCase
@@ -25,17 +26,13 @@ class MainFeedViewModel @Inject constructor(
             is MainFeedContract.MainFeedEvent.RefreshPost -> {
                 _mainFeedDataState.value = _mainFeedDataState.value.copy(refreshing = true)
                 viewModelScope.launch {
-                    when (val profileResult = fetchAllPostUseCase.invoke()) {
+                    when (val result = fetchAllPostUseCase.invoke()) {
                         is DataResult.Success<List<Post>> -> {
                             _mainFeedDataState.value =
-                                _mainFeedDataState.value.copy(post = profileResult.data)
+                                _mainFeedDataState.value.copy(post = result.data)
                         }
 
-                        is DataResult.Error<*> -> {
-                            // send Error msg
-                            _mainFeedDataState.value =
-                                _mainFeedDataState.value.copy(errorMsg = profileResult.exception.getStringResId())
-                        }
+                        is DataResult.Error<*> -> SnackbarManager.showMessage(result.exception.toSnackbarMessage())
 
                         null -> return@launch
                     }
